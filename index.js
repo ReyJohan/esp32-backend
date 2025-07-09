@@ -27,6 +27,7 @@ app.post('/google-webhook', (req, res) => {
 
 // Endpoint para ESP32
 app.get('/led-status', (req, res) => {
+    res.send('✅ Backend ESP32 funcionando');
   res.json({ status: ledStatus });
 });
 
