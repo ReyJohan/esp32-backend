@@ -12,12 +12,12 @@ app.post('/google-webhook', (req, res) => {
   const intent = req.body.queryResult?.intent?.displayName;
   console.log('Intent recibido:', intent);
 
-  if (intent === 'Default Fallback Intent' || intent === 'EncenderLED') {
+  if (intent === 'EncenderLED' || intent === 'Default Fallback Intent') {
     ledStatus = true;
     return res.json({ fulfillmentText: 'Encendiendo el LED' });
   }
 
-  if (intent === 'EncenderLED') {
+  if (intent === 'ApagarLED') {
     ledStatus = false;
     return res.json({ fulfillmentText: 'Apagando el LED' });
   }
@@ -25,13 +25,16 @@ app.post('/google-webhook', (req, res) => {
   res.json({ fulfillmentText: 'No entendí el comando.' });
 });
 
-// Endpoint para ESP32
+// Endpoint para ver estado del LED
 app.get('/led-status', (req, res) => {
-    res.send('✅ Backend ESP32 funcionando');
   res.json({ status: ledStatus });
 });
 
-// Puerto de escucha
+// Ruta raíz opcional para verificar que está corriendo
+app.get('/', (req, res) => {
+  res.send('✅ Backend ESP32 funcionando');
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
