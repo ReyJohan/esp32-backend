@@ -17,7 +17,7 @@ app.post('/google-webhook', (req, res) => {
     return res.json({ fulfillmentText: 'Encendiendo el LED' });
   }
 
-  if (intent === 'ApagarLED') {
+  if (intent === 'EncenderLED') {
     ledStatus = false;
     return res.json({ fulfillmentText: 'Apagando el LED' });
   }
