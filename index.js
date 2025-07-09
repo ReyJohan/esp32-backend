@@ -7,30 +7,41 @@ app.use(express.json());
 
 let ledStatus = false; // Estado actual del LED
 
-// Endpoint para Dialogflow webhook
+// Endpoint para Dialogflow CX webhook
 app.post('/google-webhook', (req, res) => {
-  const intent = req.body.queryResult?.intent?.displayName;
-  console.log('Intent recibido:', intent);
+  const tag = req.body.fulfillmentInfo?.tag;
+  console.log('Webhook recibido con tag:', tag);
 
-  if (intent === 'EncenderLED' || intent === 'Default Fallback Intent') {
+  let responseText = 'No entendí el comando.';
+
+  if (tag === 'ENCENDER_LED') {
     ledStatus = true;
-    return res.json({ fulfillmentText: 'Encendiendo el LED' });
-  }
-
-  if (intent === 'ApagarLED') {
+    responseText = 'Encendiendo el LED';
+  } else if (tag === 'APAGAR_LED') {
     ledStatus = false;
-    return res.json({ fulfillmentText: 'Apagando el LED' });
+    responseText = 'Apagando el LED';
   }
 
-  res.json({ fulfillmentText: 'No entendí el comando.' });
+  // Respuesta al agente CX
+  res.json({
+    fulfillment_response: {
+      messages: [
+        {
+          text: {
+            text: [responseText],
+          },
+        },
+      ],
+    },
+  });
 });
 
-// Endpoint para ver estado del LED
+// Endpoint para ESP32 (ver estado del LED)
 app.get('/led-status', (req, res) => {
   res.json({ status: ledStatus });
 });
 
-// Ruta raíz opcional para verificar que está corriendo
+// Ruta raíz de prueba
 app.get('/', (req, res) => {
   res.send('✅ Backend ESP32 funcionando');
 });
